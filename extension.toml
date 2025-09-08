@@ -1,0 +1,12 @@
+id = "quickmark"
+name = "QuickMark"
+description = "Lightning-fast Markdown linter for Zed"
+version = "0.0.1"
+schema_version = 1
+authors = ["Evgeny Kropotin <ekropotin@gmail.com>"]
+repository = "https://github.com/ekropotin/zed-quickmark"
+
+[language_servers.quickmark]
+name = "QuickMark"
+# languages = ["Markdown", "Markdown-Inline"]
+language = "Markdown"

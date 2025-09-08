@@ -1,0 +1,56 @@
+name: Release Zed Extension
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write  # Required to create releases and upload assets
+  
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-wasip1
+
+      - name: Build Extension
+        run: |
+          cargo build --release --target wasm32-wasip1
+
+      - name: Package Extension
+        run: |
+          ./scripts/package.sh
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            dist/*.tar.gz
+            dist/*.zip
+          body: |
+            ## QuickMark Zed Extension ${{ github.ref_name }}
+            
+            ### Installation
+            
+            **Option 1: Automatic (Recommended)**
+            ```bash
+            curl -fsSL https://github.com/ekropotin/zed-quickmark/releases/latest/download/install.sh | bash
+            ```
+            
+            **Option 2: Manual**
+            1. Download `quickmark-zed-extension-${{ github.ref_name }}.tar.gz`
+            2. Extract and run `./install.sh`
+            
+            ### Changes
+            - Uses QuickMark server version: $(grep server_version Cargo.toml | sed 's/.*= "\(.*\)"/\1/')
+            
+            Restart Zed after installation to activate the extension.
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
