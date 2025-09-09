@@ -59,7 +59,7 @@ impl QuickMarkExtension {
             (zed::Os::Windows, zed::Architecture::X8664) => {
                 "quickmark-server-x86_64-pc-windows-msvc.tar.gz"
             }
-            _ => return Err(format!("Unsupported platform: {:?} {:?}", os, arch).into()),
+            _ => return Err(format!("Unsupported platform: {:?} {:?}", os, arch)),
         };
 
         // Construct download URL manually for specific version
@@ -102,7 +102,7 @@ impl QuickMarkExtension {
                 }
             }
 
-            let _downloaded_bytes = zed::download_file(
+            zed::download_file(
                 &download_url,
                 &version_dir,
                 zed::DownloadedFileType::GzipTar,
@@ -111,12 +111,11 @@ impl QuickMarkExtension {
             zed::make_file_executable(&expected_binary_path)?;
 
             // Verify the binary was extracted successfully
-            if !std::fs::metadata(&expected_binary_path).is_ok() {
+            if std::fs::metadata(&expected_binary_path).is_err() {
                 return Err(format!(
                     "Failed to install quickmark-server {}: binary not found after extraction",
                     server_version
-                )
-                .into());
+                ));
             }
         }
 
